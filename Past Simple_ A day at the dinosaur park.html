@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>A Day at the Dinosaur Park 🦖</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        --green-dark: #245c3a;
+        --green: #4caf50;
+        --green-light: #dff5d8;
+        --yellow: #ffd95a;
+        --orange: #f28c28;
+        --brown: #704214;
+        --cream: #fffaf0;
+        --white: #ffffff;
+        --red: #e85d5d;
+        --blue: #4b8fe8;
+        --text: #26352a;
+        --shadow: 0 8px 24px rgba(50, 70, 40, 0.15);
+    }
+
+    body {
+        font-family: "Trebuchet MS", "Arial Rounded MT Bold", Arial, sans-serif;
+        min-height: 100vh;
+        color: var(--text);
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.7) 0 30px, transparent 31px),
+            radial-gradient(circle at 85% 15%, rgba(255,255,255,.6) 0 45px, transparent 46px),
+            linear-gradient(180deg, #bdecc4 0%, #e8f7c9 55%, #a8d98c 100%);
+        overflow-x: hidden;
+    }
+
+    /* Decorative background */
+    body::before {
+        content: "🌿   🦕   🌴       🥚       🌿   🦖   🌴";
+        position: fixed;
+        top: 10px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 25px;
+        opacity: .45;
+        pointer-events: none;
+        z-index: 0;
+        word-spacing: 25px;
+    }
+
+    .app {
+        position: relative;
+        z-index: 1;
+        width: min(900px, 94%);
+        margin: 0 auto;
+        padding: 24px 0 40px;
+    }
+
+    /* Header */
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .brand {
+        font-weight: 900;
+        color: var(--green-dark);
+        font-size: clamp(16px, 3vw, 21px);
+    }
+
+    .score-pill {
+        background: var(--white);
+        border: 3px solid #e4c95a;
+        border-radius: 999px;
+        padding: 8px 15px;
+        font-weight: 900;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        white-space: nowrap;
+    }
+
+    /* Screens */
+    .screen {
+        display: none;
+    }
+
+    .screen.active {
+        display: block;
+        animation: fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Main Card */
+    .card {
+        background: rgba(255,255,255,.96);
+        border-radius: 28px;
+        padding: clamp(22px, 5vw, 45px);
+        box-shadow: var(--shadow);
+        border: 3px solid rgba(255,255,255,.8);
+    }
+
+    /* Start screen */
+    .hero {
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .dino {
+        font-size: clamp(85px, 20vw, 150px);
+        display: block;
+        margin-bottom: 8px;
+        animation: bounce 2.5s infinite ease-in-out;
+        filter: drop-shadow(0 8px 5px rgba(0,0,0,.12));
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0) rotate(-2deg); }
+        50% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    .hero h1 {
+        color: var(--green-dark);
+        font-size: clamp(30px, 7vw, 52px);
+        line-height: 1.05;
+        margin-bottom: 14px;
+    }
+
+    .subtitle {
+        font-size: clamp(16px, 3.5vw, 20px);
+        line-height: 1.5;
+        max-width: 600px;
+        margin: 0 auto 25px;
+    }
+
+    .mission {
+        background: var(--green-light);
+        border: 2px dashed #77b96b;
+        border-radius: 18px;
+        padding: 16px;
+        margin: 20px auto;
+        max-width: 600px;
+    }
+
+    .mission strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--green-dark);
+    }
+
+    .best-score {
+        display: inline-block;
+        background: #fff3b0;
+        border-radius: 999px;
+        padding: 9px 16px;
+        margin-bottom: 22px;
+        font-weight: 900;
+    }
+
+    /* Buttons */
+    button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .primary-btn {
+        background: linear-gradient(135deg, #ffbd35, #f28c28);
+        color: #402500;
+        font-size: 20px;
+        font-weight: 900;
+        padding: 15px 30px;
+        border-radius: 16px;
+        box-shadow: 0 5px 0 #c86c15;
+        transition: .15s ease;
+        min-height: 54px;
+    }
+
+    .primary-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .primary-btn:active {
+        transform: translateY(3px);
+        box-shadow: 0 2px 0 #c86c15;
+    }
+
+    .primary-btn:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Question screen */
+    .question-header {
+        margin-bottom: 22px;
+    }
+
+    .question-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 9px;
+        font-weight: 900;
+        color: var(--green-dark);
+    }
+
+    .progress-track {
+        height: 13px;
+        background: #e5ecd9;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--green), #8bc34a);
+        border-radius: 99px;
+        transition: width .4s ease;
+    }
+
+    .question-type {
+        display: inline-block;
+        background: #e9f3ff;
+        color: #2865a8;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 13px;
+        font-weight: 900;
+        margin-bottom: 13px;
+    }
+
+    .question-text {
+        font-size: clamp(23px, 5vw, 34px);
+        line-height: 1.25;
+        margin-bottom: 22px;
+        color: #203828;
+    }
+
+    /* Options */
+    .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 13px;
+        margin-bottom: 22px;
+    }
+
+    .option {
+        background: #fff;
+        border: 3px solid #d9e5d2;
+        border-radius: 17px;
+        min-height: 60px;
+        padding: 12px 15px;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text);
+        transition: .15s ease;
+        text-align: left;
+    }
+
+    .option:hover {
+        border-color: var(--green);
+        background: #f3fff0;
+        transform: translateY(-2px);
+    }
+
+    .option.selected {
+        border-color: var(--blue);
+        background: #eaf3ff;
+        box-shadow: 0 0 0 2px rgba(75,143,232,.12);
+    }
+
+    .option.correct {
+        border-color: var(--green);
+        background: #ddf6d8;
+    }
+
+    .option.wrong {
+        border-color: var(--red);
+        background: #ffe2e2;
+    }
+
+    .option:disabled {
+        cursor: default;
+    }
+
+    /* Fill blank */
+    .fill-area {
+        margin-bottom: 22px;
+    }
+
+    .fill-input {
+        width: 100%;
+        max-width: 500px;
+        padding: 15px 17px;
+        border-radius: 15px;
+        border: 3px solid #d5dfce;
+        font-family: inherit;
+        font-size: 20px;
+        outline: none;
+    }
+
+    .fill-input:focus {
+        border-color: var(--blue);
+    }
+
+    /* Matching */
+    .matching-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .match-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .match-label {
+        font-size: 13px;
+        font-weight: 900;
+        color: #607565;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .match-item {
+        padding: 13px;
+        border-radius: 14px;
+        border: 3px solid #dbe6d6;
+        background: white;
+        font-size: 18px;
+        font-weight: 800;
+        cursor: pointer;
+        min-height: 52px;
+    }
+
+    .match-item.selected {
+        border-color: var(--blue);
+        background: #eaf3ff;
+    }
+
+    .match-item.matched {
+        border-color: var(--green);
+        background: #dcf6d7;
+        cursor: default;
+    }
+
+    .matching-status {
+        margin-bottom: 17px;
+        font-weight: 800;
+        color: var(--green-dark);
+    }
+
+    /* True false */
+    .tf-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .tf-btn {
+        flex: 1;
+        min-height: 65px;
+        border-radius: 16px;
+        font-size: 20px;
+        font-weight: 900;
+        border: 3px solid #d9e5d2;
+        background: white;
+    }
+
+    .tf-btn.selected {
+        background: #eaf3ff;
+        border-color: var(--blue);
+    }
+
+    /* Reading */
+    .story-box {
+        background: #f8f5dc;
+        border-left: 7px solid var(--orange);
+        border-radius: 15px;
+        padding: 18px;
+        margin-bottom: 20px;
+        font-size: 18px;
+        line-height: 1.65;
+    }
+
+    .story-box strong {
+        color: var(--brown);
+    }
+
+    /* Translation */
+    .translation-box {
+        background: #f0f7ed;
+        border-radius: 15px;
+        padding: 18px;
+        margin-bottom: 18px;
+        font-size: 22px;
+        font-weight: 900;
+        line-height: 1.4;
+    }
+
+    /* Feedback */
+    .feedback {
+        display: none;
+        margin-top: 22px;
+        padding: 18px;
+        border-radius: 18px;
+        animation: fadeIn .25s ease;
+    }
+
+    .feedback.show {
+        display: block;
+    }
+
+    .feedback.correct {
+        background: #dcf6d7;
+        border: 3px solid #83c878;
+    }
+
+    .feedback.incorrect {
+        background: #ffe3e3;
+        border: 3px solid #ed9a9a;
+    }
+
+    .feedback-title {
+        font-size: 23px;
+        font-weight: 900;
+        margin-bottom: 5px;
+    }
+
+    .feedback p {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .next-wrap {
+        margin-top: 14px;
+    }
+
+    /* Final */
+    .final {
+        text-align: center;
+    }
+
+    .trophy {
+        font-size: 85px;
+        margin-bottom: 8px;
+    }
+
+    .final h2 {
+        font-size: clamp(32px, 7vw, 48px);
+        color: var(--green-dark);
+        margin-bottom: 10px;
+    }
+
+    .score-number {
+        font-size: clamp(52px, 13vw, 88px);
+        font-weight: 900;
+        color: var(--orange);
+        line-height: 1;
+        margin: 15px 0;
+    }
+
+    .result-message {
+        font-size: 20px;
+        line-height: 1.5;
+        margin-bottom: 22px;
+    }
+
+    .result-stats {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .stat {
+        background: #f0f6eb;
+        border-radius: 15px;
+        padding: 13px 18px;
+        min-width: 130px;
+        font-weight: 900;
+    }
+
+    .stat span {
+        display: block;
+        font-size: 13px;
+        color: #6b7c6c;
+        margin-bottom: 4px;
+    }
+
+    /* Dino decorations */
+    .decor {
+        position: fixed;
+        pointer-events: none;
+        opacity: .75;
+        z-index: 0;
+        font-size: 40px;
+    }
+
+    .decor.one { left: 2%; bottom: 6%; }
+    .decor.two { right: 2%; bottom: 12%; }
+    .decor.three { right: 5%; top: 30%; }
+
+    /* Small screens */
+    @media (max-width: 650px) {
+        .app {
+            width: 94%;
+            padding-top: 18px;
+        }
+
+        .card {
+            padding: 20px 16px;
+            border-radius: 22px;
+        }
+
+        .options {
+            grid-template-columns: 1fr;
+        }
+
+        .matching-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .question-text {
+            font-size: 25px;
+        }
+
+        .option {
+            font-size: 17px;
+        }
+
+        .story-box {
+            font-size: 16px;
+        }
+
+        .decor {
+            display: none;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .top-bar {
+            align-items: flex-start;
+        }
+
+        .brand {
+            max-width: 180px;
+        }
+
+        .score-pill {
+            font-size: 13px;
+            padding: 7px 10px;
+        }
+
+        .primary-btn {
+            width: 100%;
+        }
+
+        .tf-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="decor one">🌿</div>
+<div class="decor two">🥚</div>
+<div class="decor three">🌴</div>
+
+<div class="app">
+
+    <div class="top-bar">
+        <div class="brand">🦖 Dino English Adventure</div>
+        <div class="score-pill" id="topScore">⭐ Score: 0</div>
+    </div>
+
+    <!-- START SCREEN -->
+    <section id="startScreen" class="screen active">
+        <div class="card hero">
+
+            <span class="dino">🦖</span>
+
+            <h1>A Day at the<br>Dinosaur Park!</h1>
+
+            <p class="subtitle">
+                Hi, Athar! 👋<br>
+                Let's go on a fun English dinosaur adventure!
+            </p>
+
+            <div class="mission">
+                <strong>🎯 Your Mission</strong>
+                Learn dinosaur words, practice past tense,
+                and answer 10 fun English challenges!
+            </div>
+
+            <div class="best-score" id="bestScoreStart">
+                🏆 Best Score: 0
+            </div>
+
+            <br>
+
+            <button class="primary-btn" onclick="startGame()">
+                🚀 Start Adventure!
+            </button>
+
+        </div>
+    </section>
+
+
+    <!-- QUESTION SCREEN -->
+    <section id="questionScreen" class="screen">
+
+        <div class="card">
+
+            <div class="question-header">
+
+                <div class="question-info">
+                    <span id="questionNumber">Question 1 of 10</span>
+                    <span id="questionPoints">⭐ 0/100</span>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+            </div>
+
+            <div id="questionContent"></div>
+
+            <div id="feedback" class="feedback">
+
+                <div class="feedback-title" id="feedbackTitle"></div>
+
+                <p id="feedbackText"></p>
+
+                <div class="next-wrap">
+                    <button class="primary-btn" id="nextButton" onclick="nextQuestion()">
+                        Next Question ➜
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FINAL SCREEN -->
+    <section id="finalScreen" class="screen">
+
+        <div class="card final">
+
+            <div class="trophy" id="finalEmoji">🏆</div>
+
+            <h2 id="finalTitle">Dinosaur Master!</h2>
+
+            <div class="score-number" id="finalScore">100</div>
+
+            <p class="result-message" id="finalMessage"></p>
+
+            <div class="result-stats">
+
+                <div class="stat">
+                    <span>Correct</span>
+                    <strong id="correctCount">10 / 10</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Games Played</span>
+                    <strong id="gamesPlayed">1</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Best Score</span>
+                    <strong id="finalBestScore">100</strong>
+                </div>
+
+            </div>
+
+            <button class="primary-btn" onclick="startGame()">
+                🔄 Play Again
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   GAME DATA
+   Teachers can edit the questions below without changing
+   the main game logic.
+   ============================================================ */
+
+const questions = [
+
+    /* 1 — Vocabulary recognition */
+    {
+        type: "multiple-choice",
+        label: "🦖 Vocabulary",
+        question: "What is this? 🦖",
+        options: [
+            "A dinosaur",
+            "A ticket",
+            "A fossil",
+            "A map"
+        ],
+        answer: "A dinosaur",
+        explanation: "🦖 A dinosaur is a large animal from a very long time ago."
+    },
+
+    /* 2 — Vocabulary meaning */
+    {
+        type: "multiple-choice",
+        label: "🌿 Vocabulary",
+        question: "What can you use to find your way around the park?",
+        options: [
+            "A map",
+            "An egg",
+            "A statue",
+            "A fossil"
+        ],
+        answer: "A map",
+        explanation: "🗺️ A map helps you find places and know where to go."
+    },
+
+    /* 3 — Present → Past matching */
+    {
+        type: "matching",
+        label: "🔗 Match the Verbs",
+        question: "Match the present verbs with their past forms.",
+        pairs: [
+            ["go", "went"],
+            ["see", "saw"],
+            ["take", "took"],
+            ["walk", "walked"]
+        ],
+        explanation: "Great! Some past verbs change completely, like go → went. Some just add -ed, like walk → walked."
+    },
+
+    /* 4 — Choose past tense */
+    {
+        type: "multiple-choice",
+        label: "⏰ Past Tense",
+        question: "Last Sunday, Athar ___ to the dinosaur park.",
+        options: [
+            "go",
+            "went",
+            "goes",
+            "going"
+        ],
+        answer: "went",
+        explanation: "Last Sunday tells us it happened in the past. Go → went."
+    },
+
+    /* 5 — Complete sentence */
+    {
+        type: "fill",
+        label: "✏️ Complete the Sentence",
+        question: "Athar ___ a big dinosaur. (see)",
+        answer: "saw",
+        acceptable: ["saw"],
+        explanation: "See → saw. We use saw because Athar saw the dinosaur in the past."
+    },
+
+    /* 6 — Regular vs irregular */
+    {
+        type: "multiple-choice",
+        label: "🧩 Regular or Irregular?",
+        question: "Which verb is a REGULAR past tense verb?",
+        options: [
+            "go → went",
+            "see → saw",
+            "walk → walked",
+            "take → took"
+        ],
+        answer: "walk → walked",
+        explanation: "Walk → walked is regular. It uses -ed. The other verbs change form."
+    },
+
+    /* 7 — Reading comprehension */
+    {
+        type: "reading",
+        label: "📖 Reading",
+        story: `
+            <strong>Last Sunday, Athar went to a dinosaur park with his family.</strong>
+            He saw many big dinosaur statues. He heard a loud dinosaur sound
+            and felt scared. Then, he found a dinosaur egg.
+            He took a photo and explored the park.
+            He had a great day!
+        `,
+        question: "Who went to the dinosaur park with Athar?",
+        options: [
+            "His teacher",
+            "His family",
+            "His friends",
+            "His brother"
+        ],
+        answer: "His family",
+        explanation: "The story says: Athar went to the dinosaur park with his family."
+    },
+
+    /* 8 — Reading + true/false */
+    {
+        type: "truefalse",
+        label: "🔎 Story Challenge",
+        story: `
+            <strong>Remember the story!</strong><br>
+            Athar heard a loud dinosaur sound.
+            He felt scared, but then he found a dinosaur egg.
+        `,
+        question: "Athar found a dinosaur egg.",
+        answer: true,
+        explanation: "True! The story says that Athar found a dinosaur egg."
+    },
+
+    /* 9 — Translation */
+    {
+        type: "translation",
+        label: "🌏 Translation",
+        question: "What does this sentence mean in Indonesian?",
+        sentence: "I took a photo of the dinosaur.",
+        options: [
+            "Saya melihat dinosaurus.",
+            "Saya mengambil foto dinosaurus.",
+            "Saya mendengar suara dinosaurus.",
+            "Saya menyentuh dinosaurus."
+        ],
+        answer: "Saya mengambil foto dinosaurus.",
+        explanation: "Take → took. 'I took a photo' means 'Saya mengambil foto.'"
+    },
+
+    /* 10 — Mixed review */
+    {
+        type: "multiple-choice",
+        label: "🏆 Final Challenge",
+        question: "Which sentence is correct?",
+        options: [
+            "Yesterday, I see a dinosaur.",
+            "Yesterday, I saw a dinosaur.",
+            "Yesterday, I seeing a dinosaur.",
+            "Yesterday, I sees a dinosaur."
+        ],
+        answer: "Yesterday, I saw a dinosaur.",
+        explanation: "Yesterday tells us it happened in the past. See → saw."
+    }
+
+];
+
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+
+let currentQuestion = 0;
+let score = 0;
+let correctAnswers = 0;
+let hasAnswered = false;
+
+let selectedOption = null;
+
+let matchingState = {
+    selectedLeft: null,
+    selectedRight: null,
+    matched: 0
+};
+
+
+/* ============================================================
+   LOCAL STORAGE
+   ============================================================ */
+
+const STORAGE_KEYS = {
+    bestScore: "atharDinoBestScore",
+    previousScore: "atharDinoPreviousScore",
+    gamesPlayed: "atharDinoGamesPlayed"
+};
+
+function getBestScore() {
+    return Number(localStorage.getItem(STORAGE_KEYS.bestScore)) || 0;
+}
+
+function getGamesPlayed() {
+    return Number(localStorage.getItem(STORAGE_KEYS.gamesPlayed)) || 0;
+}
+
+function saveGameResult() {
+
+    localStorage.setItem(
+        STORAGE_KEYS.previousScore,
+        score
+    );
+
+    const oldBest = getBestScore();
+
+    if (score > oldBest) {
+        localStorage.setItem(
+            STORAGE_KEYS.bestScore,
+            score
+        );
+    }
+
+    localStorage.setItem(
+        STORAGE_KEYS.gamesPlayed,
+        getGamesPlayed() + 1
+    );
+}
+
+
+/* ============================================================
+   SCREEN MANAGEMENT
+   ============================================================ */
+
+function showScreen(id) {
+
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* ============================================================
+   START GAME
+   ============================================================ */
+
+function startGame() {
+
+    currentQuestion = 0;
+    score = 0;
+    correctAnswers = 0;
+    hasAnswered = false;
+    selectedOption = null;
+
+    updateTopScore();
+
+    showScreen("questionScreen");
+
+    renderQuestion();
+}
+
+
+/* ============================================================
+   UPDATE SCORE
+   ============================================================ */
+
+function updateTopScore() {
+
+    document.getElementById("topScore").textContent =
+        `⭐ Score: ${score}`;
+}
+
+
+/* ============================================================
+   RENDER QUESTION
+   ============================================================ */
+
+function renderQuestion() {
+
+    hasAnswered = false;
+    selectedOption = null;
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+    document.getElementById("questionPoints").textContent =
+        `⭐ ${score}/100`;
+
+    const progress =
+        (currentQuestion / questions.length) * 100;
+
+    document.getElementById("progressFill").style.width =
+        `${progress}%`;
+
+    const container =
+        document.getElementById("questionContent");
+
+    container.innerHTML = "";
+
+    const label = document.createElement("div");
+    label.className = "question-type";
+    label.textContent = q.label;
+
+    container.appendChild(label);
+
+    if (q.type === "reading") {
+        renderReadingQuestion(q, container);
+    }
+
+    else if (q.type === "matching") {
+        renderMatchingQuestion(q, container);
+    }
+
+    else if (q.type === "fill") {
+        renderFillQuestion(q, container);
+    }
+
+    else if (q.type === "truefalse") {
+        renderTrueFalseQuestion(q, container);
+    }
+
+    else if (q.type === "translation") {
+        renderTranslationQuestion(q, container);
+    }
+
+    else {
+        renderMultipleChoice(q, container);
+    }
+
+    hideFeedback();
+}
+
+
+/* ============================================================
+   MULTIPLE CHOICE
+   ============================================================ */
+
+function renderMultipleChoice(q, container) {
+
+    const question =
+        document.createElement("h2");
+
+    question.className = "question-text";
+    question.textContent = q.question;
+
+    container.appendChild(question);
+
+    const options =
+        document.createElement("div");
+
+    options.className = "options";
+
+    q.options.forEach((option, index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "option";
+        button.textContent =
+            `${String.fromCharCode(65 + index)}. ${option}`;
+
+        button.onclick = () => {
+
+            if (hasAnswered) return;
+
+            selectedOption = option;
+
+            document.querySelectorAll(".option")
+                .forEach(btn => btn.classList.remove("selected"));
+
+            button.classList.add("selected");
+
+            showCheckButton();
+        };
+
+        options.appendChild(button);
+    });
+
+    container.appendChild(options);
+
+    createCheckButton(container);
+}
+
+
+/* ============================================================
+   READING QUESTION
+   ============================================================ */
+
+function renderReadingQuestion(q, container) {
+
+    const story =
+        document.createElement("div");
+
+    story.className = "story-box";
+    story.innerHTML = q.story;
+
+    container.appendChild(story);
+
+    const question =
+        document.createElement("h2");
+
+    question.className = "question-text";
+    question.textContent = q.question;
+
+    container.appendChild(question);
+
+    const options =
+        document.createElement("div");
+
+    options.className = "options";
+
+    q.options.forEach((option, index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "option";
+        button.textContent =
+            `${String.fromCharCode(65 + index)}. ${option}`;
+
+        button.onclick = () => {
+
+            if (hasAnswered) return;
+
+            selectedOption = option;
+
+            document.querySelectorAll(".option")
+                .forEach(btn => btn.classList.remove("selected"));
+
+            button.classList.add("selected");
+
+            showCheckButton();
+        };
+
+        options.appendChild(button);
+    });
+
+    container.appendChild(options);
+
+    createCheckButton(container);
+}
+
+
+/* ============================================================
+   FILL IN THE BLANK
+   ============================================================ */
+
+function renderFillQuestion(q, container) {
+
+    const question =
+        document.createElement("h2");
+
+    question.className = "question-text";
+    question.textContent = q.question;
+
+    container.appendChild(question);
+
+    const area =
+        document.createElement("div");
+
+    area.className = "fill-area";
+
+    const input =
+        document.createElement("input");
+
+    input.id = "fillInput";
+    input.className = "fill-input";
+    input.type = "text";
+    input.placeholder = "Type your answer...";
+    input.autocomplete = "off";
+
+    area.appendChild(input);
+
+    container.appendChild(area);
+
+    createCheckButton(container);
+
+    input.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            checkCurrentAnswer();
+        }
+    });
+}
+
+
+/* ============================================================
+   TRANSLATION
+   ============================================================ */
+
+function renderTranslationQuestion(q, container) {
+
+    const question =
+        document.createElement("h2");
+
+    question.className = "question-text";
+    question.textContent = q.question;
+
+    container.appendChild(question);
+
+    const sentence =
+        document.createElement("div");
+
+    sentence.className = "translation-box";
+    sentence.textContent = `“${q.sentence}”`;
+
+    container.appendChild(sentence);
+
+    const options =
+        document.createElement("div");
+
+    options.className = "options";
+
+    q.options.forEach((option, index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "option";
+        button.textContent =
+            `${String.fromCharCode(65 + index)}. ${option}`;
+
+        button.onclick = () => {
+
+            if (hasAnswered) return;
+
+            selectedOption = option;
+
+            document.querySelectorAll(".option")
+                .forEach(btn => btn.classList.remove("selected"));
+
+            button.classList.add("selected");
+
+            showCheckButton();
+        };
+
+        options.appendChild(button);
+    });
+
+    container.appendChild(options);
+
+    createCheckButton(container);
+}
+
+
+/* ============================================================
+   TRUE / FALSE
+   ============================================================ */
+
+function renderTrueFalseQuestion(q, container) {
+
+    const story =
+        document.createElement("div");
+
+    story.className = "story-box";
+    story.innerHTML = q.story;
+
+    container.appendChild(story);
+
+    const question =
+        document.createElement("h2");
+
+    question.className = "question-text";
+    question.textContent = q.question;
+
+    container.appendChild(question);
+
+    const buttons =
+        document.createElement("div");
+
+    buttons.className = "tf-buttons";
+
+    const trueBtn =
+        document.createElement("button");
+
+    trueBtn.className = "tf-btn";
+    trueBtn.textContent = "✅ True";
+
+    const falseBtn =
+        document.createElement("button");
+
+    falseBtn.className = "tf-btn";
+    falseBtn.textContent = "❌ False";
+
+    trueBtn.onclick = () => selectTrueFalse(true, trueBtn, falseBtn);
+    falseBtn.onclick = () => selectTrueFalse(false, falseBtn, trueBtn);
+
+    buttons.appendChild(trueBtn);
+    buttons.appendChild(falseBtn);
+
+    container.appendChild(buttons);
+
+    createCheckButton(container);
+}
+
+
+function selectTrueFalse(value, selected, other) {
+
+    if (hasAnswered) return;
+
+    selectedOption = value;
+
+    selected.classList.add("selected");
+    other.classList.remove("selected");
+
+    showCheckButton();
+}
+
+
+/* ============================================================
+   MATCHING GAME
+   ============================================================ */
+
+function renderMatchingQuestion(q, container) {
+
+    const question =
+        document.createElement("h2");
+
+    question.className = "question-text";
+    question.textContent = q.question;
+
+    container.appendChild(question);
+
+    matchingState = {
+        selectedLeft: null,
+        selectedRight: null,
+        matched: 0
+    };
+
+    const status =
+        document.createElement("div");
+
+    status.id = "matchingStatus";
+    status.className = "matching-status";
+    status.textContent = "Match all 4 pairs!";
+
+    container.appendChild(status);
+
+    const grid =
+        document.createElement("div");
+
+    grid.className = "matching-grid";
+
+    const left =
+        document.createElement("div");
+
+    left.className = "match-column";
+
+    const right =
+        document.createElement("div");
+
+    right.className = "match-column";
+
+    const leftLabel =
+        document.createElement("div");
+
+    leftLabel.className = "match-label";
+    leftLabel.textContent = "Present";
+
+    const rightLabel =
+        document.createElement("div");
+
+    rightLabel.className = "match-label";
+    rightLabel.textContent = "Past";
+
+    left.appendChild(leftLabel);
+    right.appendChild(rightLabel);
+
+    const shuffledRight =
+        [...q.pairs].sort(() => Math.random() - .5);
+
+    q.pairs.forEach((pair, index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "match-item";
+        button.dataset.side = "left";
+        button.dataset.value = pair[0];
+        button.dataset.index = index;
+        button.textContent = pair[0];
+
+        button.onclick = () =>
+            selectMatchItem(button, "left");
+
+        left.appendChild(button);
+    });
+
+    shuffledRight.forEach(pair => {
+
+        const originalIndex =
+            q.pairs.findIndex(p => p[1] === pair[1]);
+
+        const button =
+            document.createElement("button");
+
+        button.className = "match-item";
+        button.dataset.side = "right";
+        button.dataset.value = pair[1];
+        button.dataset.index = originalIndex;
+        button.textContent = pair[1];
+
+        button.onclick = () =>
+            selectMatchItem(button, "right");
+
+        right.appendChild(button);
+    });
+
+    grid.appendChild(left);
+    grid.appendChild(right);
+
+    container.appendChild(grid);
+
+    createCheckButton(container);
+    document.getElementById("checkButton").disabled = true;
+}
+
+
+function selectMatchItem(button, side) {
+
+    if (hasAnswered ||
+        button.classList.contains("matched")) {
+        return;
+    }
+
+    document.querySelectorAll(
+        `.match-item[data-side="${side}"]`
+    ).forEach(btn => {
+        btn.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+
+    if (side === "left") {
+        matchingState.selectedLeft = button;
+    } else {
+        matchingState.selectedRight = button;
+    }
+
+    if (
+        matchingState.selectedLeft &&
+        matchingState.selectedRight
+    ) {
+        checkMatchPair();
+    }
+}
+
+
+function checkMatchPair() {
+
+    const left =
+        matchingState.selectedLeft;
+
+    const right =
+        matchingState.selectedRight;
+
+    const leftIndex =
+        Number(left.dataset.index);
+
+    const rightIndex =
+        Number(right.dataset.index);
+
+    if (leftIndex === rightIndex) {
+
+        left.classList.remove("selected");
+        right.classList.remove("selected");
+
+        left.classList.add("matched");
+        right.classList.add("matched");
+
+        matchingState.matched++;
+
+        document.getElementById("matchingStatus").textContent =
+            `Great! ${matchingState.matched}/4 matched! 🎉`;
+
+    } else {
+
+        left.style.animation = "shake .25s";
+        right.style.animation = "shake .25s";
+
+        setTimeout(() => {
+            left.style.animation = "";
+            right.style.animation = "";
+        }, 300);
+
+    }
+
+    matchingState.selectedLeft = null;
+    matchingState.selectedRight = null;
+
+    if (matchingState.matched === 4) {
+
+        document.getElementById("matchingStatus").textContent =
+            "🎉 Perfect! All pairs matched!";
+
+        document.getElementById("checkButton").disabled = false;
+    }
+}
+
+
+/* ============================================================
+   CHECK BUTTON
+   ============================================================ */
+
+function createCheckButton(container) {
+
+    const wrap =
+        document.createElement("div");
+
+    wrap.id = "checkWrap";
+
+    const button =
+        document.createElement("button");
+
+    button.id = "checkButton";
+    button.className = "primary-btn";
+    button.textContent = "Check Answer ✓";
+
+    button.onclick = checkCurrentAnswer;
+
+    wrap.appendChild(button);
+    container.appendChild(wrap);
+}
+
+
+function showCheckButton() {
+
+    const button =
+        document.getElementById("checkButton");
+
+    if (button) {
+        button.disabled = false;
+    }
+}
+
+
+/* ============================================================
+   CHECK ANSWER
+   ============================================================ */
+
+function checkCurrentAnswer() {
+
+    if (hasAnswered) return;
+
+    const q = questions[currentQuestion];
+
+    let isCorrect = false;
+
+    if (q.type === "fill") {
+
+        const input =
+            document.getElementById("fillInput");
+
+        if (!input) return;
+
+        const value =
+            input.value.trim().toLowerCase();
+
+        isCorrect =
+            q.acceptable.includes(value);
+
+    }
+
+    else if (q.type === "truefalse") {
+
+        if (selectedOption === null) return;
+
+        isCorrect =
+            selectedOption === q.answer;
+
+    }
+
+    else if (q.type === "matching") {
+
+        if (matchingState.matched !== q.pairs.length) {
+            return;
+        }
+
+        isCorrect = true;
+
+    }
+
+    else {
+
+        if (selectedOption === null) return;
+
+        isCorrect =
+            selectedOption === q.answer;
+    }
+
+    hasAnswered = true;
+
+    if (isCorrect) {
+
+        score += 10;
+        correctAnswers++;
+
+        updateTopScore();
+
+        showFeedback(true, q);
+
+    } else {
+
+        showFeedback(false, q);
+    }
+
+    lockQuestion(isCorrect);
+}
+
+
+/* ============================================================
+   LOCK QUESTION AFTER ANSWER
+   ============================================================ */
+
+function lockQuestion(isCorrect) {
+
+    const buttons =
+        document.querySelectorAll(
+            ".option, .tf-btn, .match-item"
+        );
+
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+
+    const check =
+        document.getElementById("checkButton");
+
+    if (check) {
+        check.disabled = true;
+    }
+
+    const q = questions[currentQuestion];
+
+    /* Highlight answer for multiple choice */
+    if (
+        q.type === "multiple-choice" ||
+        q.type === "reading" ||
+        q.type === "translation"
+    ) {
+
+        document.querySelectorAll(".option")
+            .forEach(button => {
+
+                const text =
+                    button.textContent
+                        .replace(/^[A-D]\.\s/, "");
+
+                if (text === q.answer) {
+                    button.classList.add("correct");
+                }
+
+                if (
+                    !isCorrect &&
+                    text === selectedOption
+                ) {
+                    button.classList.add("wrong");
+                }
+            });
+    }
+
+    /* Fill input */
+    if (q.type === "fill") {
+
+        const input =
+            document.getElementById("fillInput");
+
+        if (input) {
+
+            input.disabled = true;
+
+            if (isCorrect) {
+                input.style.borderColor = "#4caf50";
+            } else {
+                input.style.borderColor = "#e85d5d";
+            }
+        }
+    }
+
+    /* True/False */
+    if (q.type === "truefalse") {
+
+        document.querySelectorAll(".tf-btn")
+            .forEach(button => {
+
+                const value =
+                    button.textContent.includes("True");
+
+                if (value === q.answer) {
+                    button.classList.add("correct");
+                }
+
+                if (
+                    !isCorrect &&
+                    value === selectedOption
+                ) {
+                    button.classList.add("wrong");
+                }
+            });
+    }
+}
+
+
+/* ============================================================
+   FEEDBACK
+   ============================================================ */
+
+function showFeedback(isCorrect, q) {
+
+    const box =
+        document.getElementById("feedback");
+
+    const title =
+        document.getElementById("feedbackTitle");
+
+    const text =
+        document.getElementById("feedbackText");
+
+    box.classList.remove(
+        "correct",
+        "incorrect"
+    );
+
+    if (isCorrect) {
+
+        box.classList.add("correct");
+
+        title.textContent =
+            "✅ Correct! Great job!";
+
+        text.textContent =
+            q.explanation || "You got it! Keep going! 🎉";
+
+    } else {
+
+        box.classList.add("incorrect");
+
+        title.textContent =
+            "❌ Not quite!";
+
+        let answerText = q.answer;
+
+        if (q.type === "fill") {
+            answerText = q.answer;
+        }
+
+        else if (q.type === "truefalse") {
+            answerText = q.answer ? "True" : "False";
+        }
+
+        text.textContent =
+            `The correct answer is: ${answerText}. ${q.explanation || ""}`;
+    }
+
+    box.classList.add("show");
+
+    setTimeout(() => {
+
+        box.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    }, 100);
+}
+
+
+function hideFeedback() {
+
+    const box =
+        document.getElementById("feedback");
+
+    box.classList.remove(
+        "show",
+        "correct",
+        "incorrect"
+    );
+}
+
+
+/* ============================================================
+   NEXT QUESTION
+   ============================================================ */
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+        finishGame();
+    } else {
+        renderQuestion();
+    }
+}
+
+
+/* ============================================================
+   FINISH GAME
+   ============================================================ */
+
+function finishGame() {
+
+    saveGameResult();
+
+    document.getElementById("progressFill").style.width = "100%";
+
+    document.getElementById("finalScore").textContent =
+        score;
+
+    document.getElementById("correctCount").textContent =
+        `${correctAnswers} / ${questions.length}`;
+
+    document.getElementById("gamesPlayed").textContent =
+        getGamesPlayed();
+
+    document.getElementById("finalBestScore").textContent =
+        getBestScore();
+
+    let title;
+    let message;
+    let emoji;
+
+    if (score >= 90) {
+
+        title = "🦖 DINOSAUR MASTER!";
+        message =
+            "Amazing, Athar! You know a lot about dinosaurs and English! 🌟";
+        emoji = "🏆";
+
+    } else if (score >= 70) {
+
+        title = "🌟 GREAT JOB!";
+        message =
+            "You are doing really well! Keep practicing your past tense! 💪";
+        emoji = "🌟";
+
+    } else if (score >= 50) {
+
+        title = "👍 GOOD TRY!";
+        message =
+            "Nice work! Keep practicing and you will get better! 🦕";
+        emoji = "👍";
+
+    } else {
+
+        title = "💪 KEEP GOING!";
+        message =
+            "Don't give up! Every mistake helps you learn. Let's practice again! 🦖";
+        emoji = "💪";
+    }
+
+    document.getElementById("finalTitle").textContent =
+        title;
+
+    document.getElementById("finalMessage").textContent =
+        message;
+
+    document.getElementById("finalEmoji").textContent =
+        emoji;
+
+    showScreen("finalScreen");
+}
+
+
+/* ============================================================
+   START SCREEN BEST SCORE
+   ============================================================ */
+
+function updateStartScreen() {
+
+    document.getElementById("bestScoreStart").textContent =
+        `🏆 Best Score: ${getBestScore()}`;
+}
+
+updateStartScreen();
+
+
+/* ============================================================
+   SIMPLE SHAKE ANIMATION
+   ============================================================ */
+
+const shakeStyle = document.createElement("style");
+
+shakeStyle.textContent = `
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+`;
+
+document.head.appendChild(shakeStyle);
+
+
+/* ============================================================
+   EXTRA KEYBOARD SUPPORT
+   ============================================================ */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+
+        const feedback =
+            document.getElementById("feedback");
+
+        if (
+            feedback &&
+            feedback.classList.contains("show")
+        ) {
+            nextQuestion();
+        }
+    }
+
+});
+
+
+</script>
+
+</body>
+</html>
